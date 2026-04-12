@@ -1,33 +1,62 @@
 const userModel = require("../models/userModel");
 const bcrypt = require("bcryptjs");
 const jwt = require("jsonwebtoken");
+const sanitize = require("mongo-sanitize");
+const { registerSchema } = require("../config/zod");
 
-const regiserUser = async (req, res) => {
-    const {name, email, password, avatar} = req.body;
+const registerUser = async (req, res) => {
+  const sanitizedBody = sanitize(req.body);
 
-    const isUserAlreadyExist = await userModel.findOne({email})
+  const validation = registerSchema.safeParse(sanitizedBody);
 
-    if(isUserAlreadyExist){
-        return res.status(400).json({ message: "User already exists" });
+  if (!validation.success) {
+    const zodError = validation.error;
+
+    let fristErrorMessage = "Validation Failed"
+    let allError = []
+
+    if(zodError?.issues && Array.isArray(zodError.issues)){
+        allError = zodError.issues.map((issue) => ({
+            field: issue.path ? issue.path.join(".") : "unknown",
+            message: issue.message || "validation error",
+
+            code: issue.code || "validation_error",
+        }))
+        fristErrorMessage = allError[0]?.message || "Validation Failed"
     }
+
+    const {name, email, password, avatar} = validation.data;
+
     
-    const user = await userModel.create({
-        name,
-        email,
-        password: await bcrypt.hash(password, 10),
-        avatar
-    })
 
-    const token = jwt.sign({id: user._id}, process.env.JWT_SECRET)
+    return res
+      .status(400)
+      .json({ message: fristErrorMessage, errors: allError });
+  }
+};
 
-    res.cookie("token", token)
+const loginUser = async (req, res) => {
+  const { email, password } = req.body;
 
-    return res.status(201).json({ message: "User registered successfully", user });
+  const user = await userModel.findOne({ email });
 
-}
+  if (!user) {
+    return res.status(400).json({ message: "User does not exist" });
+  }
 
+  const isPasswordCorrect = await bcrypt.compare(password, user.password);
 
+  if (!isPasswordCorrect) {
+    return res.status(400).json({ message: "Invalid credentials" });
+  }
+
+  const token = jwt.sign({ id: user._id }, process.env.JWT_SECRET);
+  res.cookie("token", token);
+
+  return res.status(200).json({ message: "User logged in successfully", user });
+};
 
 module.exports = {
-    regiserUser,
-}
+  registerUser,
+  loginUser,
+};
