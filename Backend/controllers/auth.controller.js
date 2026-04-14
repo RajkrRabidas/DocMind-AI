@@ -108,26 +108,6 @@ const verifyUser = async(req, res) => {
     return res.status(200).json({ message: "Email verified successfully", user: newUser });
 }
 
-const loginUser = async (req, res) => {
-  const { email, password } = req.body;
-
-  const user = await userModel.findOne({ email });
-
-  if (!user) {
-    return res.status(400).json({ message: "User does not exist" });
-  }
-
-  const isPasswordCorrect = await bcrypt.compare(password, user.password);
-
-  if (!isPasswordCorrect) {
-    return res.status(400).json({ message: "Invalid credentials" });
-  }
-
-  const token = jwt.sign({ id: user._id }, process.env.JWT_SECRET);
-  res.cookie("token", token);
-
-  return res.status(200).json({ message: "User logged in successfully", user });
-};
 
 module.exports = {
   registerUser,
