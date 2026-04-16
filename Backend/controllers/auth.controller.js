@@ -213,9 +213,18 @@ const verifyOtp = async (req, res) => {
 
 }
 
+const myProfile = async (req, res) => {
+
+  const user = req.user
+
+  res.status(user)
+
+}
+
 module.exports = {
   registerUser,
   verifyUser,
   loginUser,
-  verifyOtp
+  verifyOtp,
+  myProfile
 };

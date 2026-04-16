@@ -1,5 +1,5 @@
 const express = require("express");
-
+const middlewere = require('../middleware/auth.middleware')
 const authController = require("../controllers/auth.controller");
 
 const router = express.Router();
@@ -9,5 +9,6 @@ router.post("/verify/:token", authController.verifyUser);
 
 router.post("/login", authController.loginUser);
 router.post("/verify-otp", authController.verifyOtp);
+router.get("/me", middlewere.authMiddleware, authController.myProfile)
 
 module.exports = router;
