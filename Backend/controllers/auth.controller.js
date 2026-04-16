@@ -207,7 +207,7 @@ const verifyOtp = async (req, res) => {
 
   let user = await userModel.findOne({ email })
 
-  const tokenData = await generateToken(user._id)
+  await generateToken(user.id, res)
 
   res.status(200).json({ message: `welcome ${user.name}`, user })
 

@@ -1,7 +1,7 @@
 const jwt = require("jsonwebtoken")
 const { redisClient } = require("../services/redis")
 
-const generateToken = async (req, res) => {
+const generateToken = async (id, res) => {
     const accessToken = jwt.sign({ id }, process.env.JWT_SECRET, {
         expiresIn: '1m'
     })
@@ -11,7 +11,7 @@ const generateToken = async (req, res) => {
 
     const refreshTokenKey = `refresh_token:${id}`
 
-    await redisClient.setEx(refreshToken, 7 * 24 * 60 * 60)
+    await redisClient.set(refreshTokenKey, refreshToken, { EX: 7 * 24 * 60 * 60 })
 
     res.cookie("access_token", accessToken, {
 
