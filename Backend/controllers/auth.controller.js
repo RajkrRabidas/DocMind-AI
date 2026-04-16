@@ -217,7 +217,7 @@ const myProfile = async (req, res) => {
 
   const user = req.user
 
-  res.status(user)
+  res.json(user)
 
 }
 

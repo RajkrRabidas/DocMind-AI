@@ -1,11 +1,12 @@
 const jwt = require("jsonwebtoken")
 const { redisClient } = require("../services/redis")
+const userModel = require("../models/userModel")
 
-const authMiddleware = (req, res, next) => {
+const authMiddleware = async (req, res, next) => {
     try {
-        const token = req.cookies.accessToken
+        const token = req.cookies.access_token
 
-        if (!token) {
+        if (!token) {   
             return res.status(403).json({ massage: "Please login - no Token" })
         }
 
@@ -36,9 +37,9 @@ const authMiddleware = (req, res, next) => {
 
     } catch (error) {
 
-        res.status(500).json({massage: error.massage})
+        res.status(500).json({massage: "Internal Server Error"})
 
     }
 }
 
-module.exports = authMiddleware
+module.exports = {authMiddleware}
