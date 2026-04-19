@@ -63,7 +63,7 @@ const registerUser = async (req, res) => {
 
     await redisClient.set(ratelimitKey, "true", { EX: 60 }); // 1 min rate limit
 
-    return res
+    res
       .status(200)
       .json({
         message:
@@ -106,7 +106,7 @@ const verifyUser = async (req, res) => {
     password: userData.password,
   });
 
-  return res.status(200).json({ message: "Email verified successfully", user: newUser });
+  res.status(200).json({ message: "Email verified successfully", user: newUser });
 }
 
 const loginUser = async (req, res) => {
@@ -172,7 +172,7 @@ const loginUser = async (req, res) => {
 
     await redisClient.set(ratelimitKey, "ture", { EX: 60 }); // 1 min rate limit
 
-    return res.status(200).json({ message: "Otp sent to your email, it is valid for 5 min" })
+    res.status(200).json({ message: "Otp sent to your email, it is valid for 5 min" })
 
   } catch (error) {
     console.error("login error:", error);
@@ -216,15 +216,53 @@ const verifyOtp = async (req, res) => {
 const myProfile = async (req, res) => {
 
   const user = req.user
-
   res.json(user)
-
 }
+
+
+const refreshToken = async (req, res) => {
+  const refreshToken = req.cookies?.refresh_token || (req.headers.authorization && req.headers.authorization.split(' ')[1])
+
+  if (!refreshToken) {
+      return res.status(401).json({ message: "Please login - no token provided" })
+  }
+
+  const decode = await generateToken.VerifyRefreshToken(refreshToken)
+
+  if(!decode) {
+      return res.status(401).json({ message: "Invalid refresh token" })
+  }
+
+  await generateToken.generateNewAccessToken(decode.id, res)
+
+  res.status(200).json({ message: "Access token refreshed", user: req.user }) 
+}
+
+const logoutUser = async (req, res) => {
+  try {
+    const userId = req.user.id;
+
+    await generateToken.revokeRefreshToken(userId);
+
+    res.clearCookie("access_token" )
+    res.clearCookie("refresh_token")
+
+    await redisClient.del(`user${userId}`)
+
+    res.status(200).json({ message: "Logged out successfully" }); 
+  }catch (error) {
+    console.error("Logout error:", error);
+    return res.status(500).json({ message: "Internal server error" });
+  }
+}
+
 
 module.exports = {
   registerUser,
   verifyUser,
   loginUser,
   verifyOtp,
-  myProfile
+  myProfile,
+  refreshToken,
+  logoutUser
 };

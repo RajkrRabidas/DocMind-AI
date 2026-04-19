@@ -34,4 +34,34 @@ const generateToken = async (id, res) => {
 
 }
 
-module.exports = generateToken
+const VerifyRefreshToken = async (refreshToken) => {
+    try {
+        const decoded = jwt.verify(refreshToken, process.env.REFRESH_SECERET)
+        const storedRefreshToken = await redisClient.get(`refresh_token:${decoded.id}`)
+
+        if(storedRefreshToken === refreshToken) {
+            return decoded
+        }
+
+        return null
+    }catch (error) {
+        return null
+    }
+}
+
+const generateNewAccessToken = async (id, res) => {
+        const accessToken = jwt.sign({ id }, process.env.JWT_SECRET, { expiresIn: '1m' })
+
+        res.cookie("access_token", accessToken, {
+            httpOnly: true,
+            // secure: true,
+            sameSite: "strict",
+            maxAge: 60 * 1000, // 1 minute
+        })
+}
+
+const revokeRefreshToken = async (id) => {
+    await redisClient.del(`refresh_token:${id}`)
+}
+
+module.exports = {generateToken, VerifyRefreshToken, generateNewAccessToken, revokeRefreshToken}
