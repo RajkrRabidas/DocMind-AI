@@ -7,7 +7,7 @@ const { registerSchema, loginSchema } = require("../config/zod");
 const { connectRedis, redisClient } = require("../services/redis");
 const sendMail = require("../config/sendMail");
 const { getVerifyEmailHtml, getOtpHtml } = require("../config/html");
-const generateToken = require("../config/generateToken");
+const { generateToken } = require("../config/generateToken");
 
 const registerUser = async (req, res) => {
   const sanitizedBody = sanitize(req.body);

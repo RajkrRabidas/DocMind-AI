@@ -1,28 +1,34 @@
 import React from "react";
 import { useNavigate } from "react-router-dom";
 import { useState } from "react";
-import {serverUrl} from '../main'
-import {toast} from "react-toastify"
-import axios from "axios"
+import { serverUrl } from "../main";
+import { toast } from "react-toastify";
+import { Link } from "react-router-dom";  
+import axios from "axios";
 
 const Login = () => {
   const navigate = useNavigate();
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
-  const [btnLoading, setBtnLoading] = useState(false)
+  const [btnLoading, setBtnLoading] = useState(false);
 
   const handelSubmit = async (e) => {
-     setBtnLoading(true)
+    setBtnLoading(true);
     e.preventDefault();
-    try{
-      const {data} = await axios.post(`${serverUrl}/api/auth/login`, {email, password})
-      toast.success(data.message)
-    }catch(error){
-      toast.error(error.response.data.message)
-    }finally{
-      setBtnLoading(false)
+    try {
+      const { data } = await axios.post(`${serverUrl}/api/auth/login`, {
+        email,
+        password,
+      });
+      toast.success(data.message);
+      localStorage.setItem("email", email);
+      navigate("/verify-otp");
+    } catch (error) {
+      toast.error(error.response.data.message);
+    } finally {
+      setBtnLoading(false);
     }
-  }
+  };
 
   return (
     <section className="text-gray-400 bg-gray-900 body-font">
@@ -32,7 +38,10 @@ const Login = () => {
             DocMind AI-Powered Document Analysis
           </h1>
         </div>
-        <form onSubmit={handelSubmit} className="lg:w-2/6 md:w-1/2 bg-gray-800 bg-opacity-50 rounded-lg p-8 flex flex-col md:ml-auto w-full mt-10 md:mt-0">
+        <form
+          onSubmit={handelSubmit}
+          className="lg:w-2/6 md:w-1/2 bg-gray-800 bg-opacity-50 rounded-lg p-8 flex flex-col md:ml-auto w-full mt-10 md:mt-0"
+        >
           <h2 className="text-white text-lg font-medium title-font mb-5">
             Sign Up
           </h2>
@@ -51,7 +60,10 @@ const Login = () => {
           </div>
 
           <div className="relative mb-4">
-            <label htmlFor="password" className="leading-7 text-sm text-gray-400">
+            <label
+              htmlFor="password"
+              className="leading-7 text-sm text-gray-400"
+            >
               Password
             </label>
             <input
@@ -67,7 +79,9 @@ const Login = () => {
             {btnLoading ? "Submiting" : "Submit"}
           </button>
           <p className="text-xs mt-3">
-            Literally you probably haven't heard of them jean shorts.
+            don't have a account <Link to="/register" className="text-green-500">
+              Login
+            </Link>
           </p>
         </form>
       </div>
