@@ -17,7 +17,7 @@ const generateToken = async (id, res) => {
 
         httpOnly: true,
         secure: true,
-        sameSite: "strict",
+        sameSite: "none",
         maxAge: 60 * 1000, // 1 minute
 
     })
@@ -26,7 +26,7 @@ const generateToken = async (id, res) => {
 
         httpOnly: true,
         secure: true,
-        sameSite: "strict",
+        sameSite: "none",
         maxAge: 7 * 24 * 60 * 60 * 1000, // 7 days
     })
 
@@ -55,7 +55,7 @@ const generateNewAccessToken = async (id, res) => {
         res.cookie("access_token", accessToken, {
             httpOnly: true,
             secure: true,
-            sameSite: "strict",
+            sameSite: "none",
             maxAge: 60 * 1000, // 1 minute
         })
 }
