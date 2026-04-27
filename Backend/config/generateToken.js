@@ -3,7 +3,7 @@ const { redisClient } = require("../services/redis")
 
 const generateToken = async (id, res) => {
     const accessToken = jwt.sign({ id }, process.env.JWT_SECRET, {
-        expiresIn: '15m'
+        expiresIn: '1m'
     })
     const refreshToken = jwt.sign({ id }, process.env.REFRESH_SECERET, {
         expiresIn: "7d"
@@ -18,7 +18,7 @@ const generateToken = async (id, res) => {
         httpOnly: true,
         secure: true,
         sameSite: "none",
-        maxAge: 15* 60 * 1000, // 15 minutes
+        maxAge: 1 * 60 * 1000, // 15 minutes
 
     })
 
