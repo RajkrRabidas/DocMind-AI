@@ -1,8 +1,45 @@
-import {createContext} from "react"
+import {createContext, useState, useEffect, useContext} from "react"
+import {serverUrl} from "../main"
+import axios from "axios"
 
 const AppContext = createContext(null)
 
 export const AppProvider = ({children}) =>{
-    const []
+    const [user, setUser] = useState(null)
+    const [Loading, setLoading] = useState(true)
+    const [isAuth, setIsAuth] = useState(false)
+
+    async function fetchUser() {
+        setLoading(true)
+        try{
+            const {data} = await axios.get(`${serverUrl}/api/auth/me`,{
+                withCredentials: true
+            })
+
+            setUser(data)
+            setIsAuth(true)
+             
+        }catch(error){
+            console.error("Error fetching user data:", error)
+        }finally{
+            setLoading(false)
+        }
+    }
+
+    useEffect(() => {
+        fetchUser()
+    }, [])
+
+    return(
+        <AppContext.Provider value={{user, setUser, Loading, isAuth, fetchUser}}>
+            {children}
+        </AppContext.Provider>
+    )
 }
 
+export const AppData = () => {
+    const context = useContext(AppContext)
+
+    if(!context) throw new Error("useAppData must be used within an AppProvider")
+    return context
+}
