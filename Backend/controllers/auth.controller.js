@@ -191,8 +191,6 @@ const verifyOtp = async (req, res) => {
 
   const storeOtpString = await redisClient.get(otpKey)
 
-  console.log("storeOtpString", storeOtpString, otpKey)
-
   if (!storeOtpString) {
     return res.status(400).json({ message: "otp expired" })
   }
@@ -221,28 +219,34 @@ const myProfile = async (req, res) => {
 
 
 const refreshToken = async (req, res) => {
-  const refreshToken = req.cookies?.refresh_token || (req.headers.authorization && req.headers.authorization.split(' ')[1])
+  try {
+     const refreshToken = req.cookies?.refresh_token
+  console.log("Refresh token received:", refreshToken) 
 
   if (!refreshToken) {
       return res.status(403).json({ message: "Please login - no token provided" })
   }
 
-  const decode = await generateToken.VerifyRefreshToken(refreshToken)
+  const decode = await VerifyRefreshToken(refreshToken)
 
   if(!decode) {
       return res.status(403).json({ message: "Invalid refresh token" })
   }
 
-  await generateToken.generateNewAccessToken(decode.id, res)
+  await generateNewAccessToken(decode.id, res)
 
   res.status(200).json({ message: "Access token refreshed", user: req.user }) 
+  } catch (error) {
+    console.error("Refresh token error:", error);
+    return res.status(500).json({ message: "Internal server error" });
+  }
 }
 
 const logoutUser = async (req, res) => {
   try {
     const userId = req.user.id;
 
-    await generateToken.revokeRefreshToken(userId);
+    await revokeRefreshToken(userId);
 
     res.clearCookie("access_token" )
     res.clearCookie("refresh_token")
