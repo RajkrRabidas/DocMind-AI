@@ -7,7 +7,7 @@ const { registerSchema, loginSchema } = require("../config/zod");
 const { connectRedis, redisClient } = require("../services/redis");
 const sendMail = require("../config/sendMail");
 const { getVerifyEmailHtml, getOtpHtml } = require("../config/html");
-const { generateToken } = require("../config/generateToken");
+const { generateToken, VerifyRefreshToken, generateNewAccessToken, revokeRefreshToken } = require("../config/generateToken");
 
 const registerUser = async (req, res) => {
   const sanitizedBody = sanitize(req.body);
@@ -224,13 +224,13 @@ const refreshToken = async (req, res) => {
   const refreshToken = req.cookies?.refresh_token || (req.headers.authorization && req.headers.authorization.split(' ')[1])
 
   if (!refreshToken) {
-      return res.status(401).json({ message: "Please login - no token provided" })
+      return res.status(403).json({ message: "Please login - no token provided" })
   }
 
   const decode = await generateToken.VerifyRefreshToken(refreshToken)
 
   if(!decode) {
-      return res.status(401).json({ message: "Invalid refresh token" })
+      return res.status(403).json({ message: "Invalid refresh token" })
   }
 
   await generateToken.generateNewAccessToken(decode.id, res)
