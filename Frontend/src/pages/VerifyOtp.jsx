@@ -1,6 +1,6 @@
 import React from 'react'
 import { useState } from "react";
-import { Link } from "react-router-dom";  
+import { Link, useNavigate } from "react-router-dom";  
 import { serverUrl } from "../main";
 import { toast } from "react-toastify";
 import axios from "axios";
@@ -8,6 +8,7 @@ import axios from "axios";
 const VerifyOtp = () => {
   const [otp, setOtp] = useState("");
   const [btnLoading, setBtnLoading] = useState(false);
+  const navigate = useNavigate()
 
   const handelSubmit = async (e) => {
     setBtnLoading(true)
@@ -20,6 +21,7 @@ const VerifyOtp = () => {
       })
       localStorage.clear("email")
       toast.success(data.message)
+      navigate("/me") // Redirect to the home page after successful verification
     }catch(error){
       toast.error(error?.response?.data?.message || "Verification failed. Please try again.")
     }finally{
