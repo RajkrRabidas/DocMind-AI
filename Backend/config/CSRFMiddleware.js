@@ -1,7 +1,7 @@
 const crypto = require('crypto');
 const redisClient = require('../services/redis');
 
-const generateCSRFToken = (userId, res) => {
+const generateCSRFToken = async (userId, res) => {
 
     const CSRFToken = crypto.randomBytes(32).toString("hex")
 
@@ -76,4 +76,18 @@ const revokeCSRFToken = async (userId) => {
     const csrfKey = `csrf:${userId}`
 
     await redisClient.del(csrfKey)
+}
+
+const refreshCSRFToeken = async (userId, res) => {
+
+    await revokeCSRFToken(userId)
+
+    return await generateCSRFToken(userId, res)
+}
+
+module.exports = {
+    generateCSRFToken,
+    verifyCSRFToken,
+    revokeCSRFToken,
+
 }

@@ -1,5 +1,6 @@
 const jwt = require("jsonwebtoken")
 const { redisClient } = require("../services/redis")
+const { generateCSRFToken, revokeCSRFToken } = require("./CSRFMiddleware")
 
 const generateToken = async (id, res) => {
     const accessToken = jwt.sign({ id }, process.env.JWT_SECRET, {
@@ -30,7 +31,9 @@ const generateToken = async (id, res) => {
         maxAge: 7 * 24 * 60 * 60 * 1000, // 7 days
     })
 
-    return { accessToken, refreshToken }
+    const csrfToken = await generateCSRFToken(id, res)
+
+    return { accessToken, refreshToken, csrfToken}
 
 }
 
@@ -62,6 +65,7 @@ const generateNewAccessToken = async (id, res) => {
 
 const revokeRefreshToken = async (id) => {
     await redisClient.del(`refresh_token:${id}`)
+    await revokeCSRFToken()
 }
 
 module.exports = {generateToken, VerifyRefreshToken, generateNewAccessToken, revokeRefreshToken}

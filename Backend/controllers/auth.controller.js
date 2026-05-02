@@ -8,6 +8,7 @@ const { connectRedis, redisClient } = require("../services/redis");
 const sendMail = require("../config/sendMail");
 const { getVerifyEmailHtml, getOtpHtml } = require("../config/html");
 const { generateToken, VerifyRefreshToken, generateNewAccessToken, revokeRefreshToken } = require("../config/generateToken");
+const { generateCSRFToken } = require("../config/CSRFMiddleware");
 
 const registerUser = async (req, res) => {
   const sanitizedBody = sanitize(req.body);
@@ -250,6 +251,7 @@ const logoutUser = async (req, res) => {
 
     res.clearCookie("access_token" )
     res.clearCookie("refresh_token")
+    res.clearCookie("CSRFToken")
 
     await redisClient.del(`user${userId}`)
 
@@ -260,6 +262,16 @@ const logoutUser = async (req, res) => {
   }
 }
 
+const refreshCSRF = async (req, res) => {
+  const userId = req.user._id
+  const newCSRFToken = await generateCSRFToken(userId, res)
+
+  res.json({
+    message: "CSRF token refresh",
+    csrfToken: newCSRFToken,
+  })
+}
+
 
 module.exports = {
   registerUser,
@@ -268,5 +280,6 @@ module.exports = {
   verifyOtp,
   myProfile,
   refreshToken,
-  logoutUser
+  logoutUser,
+  refreshCSRF
 };
