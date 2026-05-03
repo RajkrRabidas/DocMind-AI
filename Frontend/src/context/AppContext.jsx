@@ -24,6 +24,18 @@ export const AppProvider = ({ children }) => {
     }
   }
 
+  async function logout(navigate) {
+    try {
+      const {data} = await api.post("/api/auth/logout");
+      toast.success(data.message || "Logged out successfully");
+      setUser(null);
+      setIsAuth(false);
+      navigate("/login");
+    } catch (error) {
+      console.error("Error during logout:", error);
+      toast.error("something went wrong.");
+    }
+
   useEffect(() => {
     fetchUser();
   }, []);
