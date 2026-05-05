@@ -2,6 +2,7 @@ import { createContext, useState, useEffect, useContext } from "react";
 import { serverUrl } from "../main";
 import axios from "axios";
 import api from "../apiIntersepters";
+import { toast } from "react-toastify";
 
 const AppContext = createContext(null);
 
@@ -35,6 +36,7 @@ export const AppProvider = ({ children }) => {
       console.error("Error during logout:", error);
       toast.error("something went wrong.");
     }
+  }
 
   useEffect(() => {
     fetchUser();
