@@ -1,5 +1,5 @@
 const crypto = require('crypto');
-const redisClient = require('../services/redis');
+const {redisClient} = require('../services/redis');
 
 const generateCSRFToken = async (userId, res) => {
 
@@ -7,9 +7,9 @@ const generateCSRFToken = async (userId, res) => {
 
     const CSRFKey = `csrf:${userId}`
 
-    await redisClient.setEx(CSRFKey, 3600, CSRFToken)
+    await redisClient.set(CSRFKey, CSRFToken, { EX: 60 * 60 }) // 1 hour
 
-    res.cookies("CSRFToken", CSRFToken, {
+    res.cookie("CSRFToken", CSRFToken, {
         httpOnly: false,
         secure: true,
         sameSite: "none",
@@ -20,41 +20,39 @@ const generateCSRFToken = async (userId, res) => {
 
 const verifyCSRFToken = async (req, res, next) => {
     try {
-        if (req.mathod === "GET") {
+        if (req.method === "GET") {
             return next()
         }
 
         const userId = req.user?._id
 
         if (!userId) {
-            return res.stauts(401).json({
+            return res.status(401).json({
                 message: "User not authenticated"
             })
         }
 
-        const clientToken = req.headers["x-csrf-token"] ||
-        req.headers["x-xsrf-token"] || 
-        req.headers["csrf-token"]
+        const clientToken = req.headers["x-csrf-token"]
 
         if(!clientToken) {
-            return res.stauts(403).json({
+            return res.status(403).json({
                 message: "CSRF Token missing please refrece the page", 
                 code: "CSRF_TOKEN_MISSING"})
         }
 
-        const cstfToken = `csrf:${userId}`
+        const CSRFKey = `csrf:${userId}`
 
         const storeToken = await redisClient.get(CSRFKey)
 
 
         if(!storeToken){
-            return res.stauts(403).json({
+            return res.status(403).json({
                 message: "CSRF Token missing please try again", 
                 code: "CSRF_TOKEN_EXPIRED"})
         }
 
         if(storeToken !== clientToken){
-            return res.stauts(403).json({
+            return res.status(403).json({
                 message: "Invalid CSRF Token. please refresh token",
                 code: "CSRF_TOKEN_INVALID"
             })
@@ -63,8 +61,8 @@ const verifyCSRFToken = async (req, res, next) => {
         next()
 
     } catch (error) {
-        console.log("CSRF verification error", etrror)
-        return res.stauts(500).json({
+        console.log("CSRF verification error", error)
+        return res.status(500).json({
             message: "CSRF Varification failed",
             code: "CSRF_VARIFICATION_ERROR"
         })

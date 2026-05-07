@@ -266,6 +266,8 @@ const refreshCSRF = async (req, res) => {
   const userId = req.user._id
   const newCSRFToken = await generateCSRFToken(userId, res)
 
+  console.log(newCSRFToken)
+
   res.json({
     message: "CSRF token refresh",
     csrfToken: newCSRFToken,

@@ -8,7 +8,7 @@ const PORT = process.env.PORT || 3000;
 connectRedis();
 
 // Connect to MongoDB and start the server
-dbConnect();
+dbConnect(); 
 
 // Start the server
 app.listen(PORT, () => {
