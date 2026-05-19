@@ -11,6 +11,8 @@ export const AppProvider = ({ children }) => {
   const [Loading, setLoading] = useState(true);
   const [isAuth, setIsAuth] = useState(false);
 
+
+  
   async function fetchUser() {
     setLoading(true);
     try {

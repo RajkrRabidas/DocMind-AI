@@ -8,6 +8,7 @@ import { AppData } from './context/AppContext'
 
 const App = () => {
   const { loading, isAuth } = AppData()
+  
   return (
     <>
       {loading ? (
