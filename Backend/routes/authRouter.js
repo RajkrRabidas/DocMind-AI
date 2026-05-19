@@ -15,4 +15,5 @@ router.post("/refresh-token", authController.refreshToken)
 router.post("/logout", authMiddleware,verifyCSRFToken, authController.logoutUser)
 router.post("/refresh-csrf", authMiddleware, authController.refreshCSRF)
 
+
 module.exports = router;
