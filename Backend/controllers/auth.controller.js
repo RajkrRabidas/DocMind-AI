@@ -130,7 +130,7 @@ const loginUser = async (req, res) => {
 
     return res.status(400).json({
       message: firstErrorMessage,
-      errors: allError,9i
+      errors: allError,
     });
   }
 
