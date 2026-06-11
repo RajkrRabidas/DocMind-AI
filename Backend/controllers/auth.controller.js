@@ -218,7 +218,6 @@ const myProfile = async (req, res) => {
   res.json(user)
 }
 
-
 const refreshToken = async (req, res) => {
   try {
      const refreshToken = req.cookies?.refresh_token
