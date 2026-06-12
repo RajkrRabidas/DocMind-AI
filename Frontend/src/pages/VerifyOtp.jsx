@@ -20,8 +20,8 @@ const VerifyOtp = () => {
         withCredentials: true
       })
       localStorage.clear("email")
-      toast.success(data.message)
       navigate("/me") // Redirect to the home page after successful verification
+      toast.success(data.message)
     }catch(error){
       toast.error(error?.response?.data?.message || "Verification failed. Please try again.")
     }finally{

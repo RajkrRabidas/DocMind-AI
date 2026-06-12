@@ -7,11 +7,11 @@ import MyProfile from "./pages/MyProfile"
 import { AppData } from './context/AppContext'
 
 const App = () => {
-  const { loading, isAuth } = AppData()
+  const { Loading, isAuth } = AppData()
   
   return (
     <>
-      {loading ? (
+      {Loading ? (
         <div className="loading margin-auto ml-2 text-2xl text-black">{"loading..."} </div>
       ) : (
         <Routes>

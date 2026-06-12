@@ -20,7 +20,7 @@ api.interceptors.request.use(
             config.method === "put" ||
             config.method === "delete"
         ){
-            const csrfToken = getCookie("accessToken")
+            const csrfToken = getCookie("CSRFToken")
             if(csrfToken){
                 config.headers["x-csrf-token"] = csrfToken
             }
@@ -55,7 +55,7 @@ api.interceptors.response.use(
 
             const erreorCode = error.response.data?.code || "";
 
-            if(errorCode.startsWith("CSRF_")){
+            if(erreorCode.startsWith("CSRF_")){
                 if(isRefreshingCSRFToken){
                     return new Promise((resolve, reject) => {
                         csrfFailedQueue.push({resolve, reject})

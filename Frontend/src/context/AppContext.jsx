@@ -1,8 +1,9 @@
 import { createContext, useState, useEffect, useContext } from "react";
-import { serverUrl } from "../main";
+import { serverUrl } from "../main"; 
 import axios from "axios";
 import api from "../apiIntersepters";
 import { toast } from "react-toastify";
+import { useNavigate } from "react-router-dom";
 
 const AppContext = createContext(null);
 
@@ -10,6 +11,8 @@ export const AppProvider = ({ children }) => {
   const [user, setUser] = useState(null);
   const [Loading, setLoading] = useState(true);
   const [isAuth, setIsAuth] = useState(false);
+
+  const navigate = useNavigate();
 
 
   
@@ -27,13 +30,12 @@ export const AppProvider = ({ children }) => {
     }
   }
 
-  async function logout(navigate) {
+  async function logoutUser() {
     try {
       const {data} = await api.post("/api/auth/logout");
       toast.success(data.message || "Logged out successfully");
       setUser(null);
       setIsAuth(false);
-      navigate("/login");
     } catch (error) {
       console.error("Error during logout:", error);
       toast.error("something went wrong.");
@@ -45,7 +47,7 @@ export const AppProvider = ({ children }) => {
   }, []);
 
   return (
-    <AppContext.Provider value={{ user, setUser, Loading, isAuth, fetchUser }}>
+    <AppContext.Provider value={{ user, setUser, Loading, isAuth, fetchUser, logoutUser }}>
       {children}
     </AppContext.Provider>
   );

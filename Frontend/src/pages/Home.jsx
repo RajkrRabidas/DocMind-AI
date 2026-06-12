@@ -4,12 +4,11 @@ import { useNavigate } from 'react-router-dom'
 import { toast } from 'react-toastify'
 
 const Home = () => {
-  const { logout } = AppData();
-  const navigate = useNavigate();
+  const { logoutUser } = AppData();
   return (
     <div>
-    <button className="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded"
-    onClick={() => logout(navigate)}
+    <button className="bg-red-500 hover:bg-red-700 text-white font-bold py-2 px-4 rounded"
+    onClick={logoutUser}
     >
       Logout
     </button>
