@@ -70,17 +70,17 @@ const verifyCSRFToken = async (req, res, next) => {
 }
 
 
-const revokeCSRFToken = async (userId) => {
-    const csrfKey = `csrf:${userId}`
+const revokeCSRFToken = async (id) => {
+    const csrfKey = `csrf:${id}`
 
     await redisClient.del(csrfKey)
 }
 
-const refreshCSRFToeken = async (userId, res) => {
+const refreshCSRFToeken = async (id, res) => {
 
-    await revokeCSRFToken(userId)
+    await revokeCSRFToken(id)
 
-    return await generateCSRFToken(userId, res)
+    return await generateCSRFToken(id, res)
 }
 
 module.exports = {

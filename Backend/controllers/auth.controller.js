@@ -8,7 +8,7 @@ const { connectRedis, redisClient } = require("../services/redis");
 const sendMail = require("../config/sendMail");
 const { getVerifyEmailHtml, getOtpHtml } = require("../config/html");
 const { generateToken, VerifyRefreshToken, generateNewAccessToken, revokeRefreshToken } = require("../config/generateToken");
-const { generateCSRFToken } = require("../config/CSRFMiddleware");
+const { generateCSRFToken, revokeCSRFToken } = require("../config/CSRFMiddleware");
 
 const registerUser = async (req, res) => {
   const sanitizedBody = sanitize(req.body);
@@ -247,6 +247,7 @@ const logoutUser = async (req, res) => {
     const userId = req.user.id;
 
     await revokeRefreshToken(userId);
+    await revokeCSRFToken(userId);
 
     res.clearCookie("access_token" )
     res.clearCookie("refresh_token")

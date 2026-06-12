@@ -43,7 +43,7 @@ const Login = () => {
           className="lg:w-2/6 md:w-1/2 bg-gray-800 bg-opacity-50 rounded-lg p-8 flex flex-col md:ml-auto w-full mt-10 md:mt-0"
         >
           <h2 className="text-white text-lg font-medium title-font mb-5">
-            Sign Up
+            Sign in
           </h2>
           <div className="relative mb-4">
             <label htmlFor="email" className="leading-7 text-sm text-gray-400">
@@ -80,7 +80,7 @@ const Login = () => {
           </button>
           <p className="text-xs mt-3">
             don't have a account <Link to="/register" className="text-green-500">
-              Login
+              register
             </Link>
           </p>
         </form>

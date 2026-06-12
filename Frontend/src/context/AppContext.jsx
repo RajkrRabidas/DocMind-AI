@@ -47,7 +47,7 @@ export const AppProvider = ({ children }) => {
   }, []);
 
   return (
-    <AppContext.Provider value={{ user, setUser, Loading, isAuth, fetchUser, logoutUser }}>
+    <AppContext.Provider value={{ user, setUser, Loading, isAuth, setIsAuth, fetchUser, logoutUser }}>
       {children}
     </AppContext.Provider>
   );
