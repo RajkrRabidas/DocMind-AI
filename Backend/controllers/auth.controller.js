@@ -206,9 +206,9 @@ const verifyOtp = async (req, res) => {
 
   let user = await userModel.findOne({ email })
 
-  await generateToken(user.id, res)
+  const tokens = await generateToken(user.id, res)
 
-  res.status(200).json({ message: `welcome ${user.name}`, user })
+  res.status(200).json({ message: `welcome ${user.name}`, user, accessToken: tokens.accessToken })
 
 }
 
