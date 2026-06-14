@@ -8,6 +8,7 @@ import { AppData } from './context/AppContext'
 import Register from './pages/Register'
 import Verify from './pages/Verify'
 
+
 const App = () => {
   const { Loading, isAuth } = AppData()
   
