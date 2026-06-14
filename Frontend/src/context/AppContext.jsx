@@ -13,8 +13,6 @@ export const AppProvider = ({ children }) => {
   const [isAuth, setIsAuth] = useState(false);
 
   const navigate = useNavigate();
-
-
   
   async function fetchUser() {
     setLoading(true);
