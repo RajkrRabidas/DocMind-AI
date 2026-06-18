@@ -4,7 +4,7 @@ const { generateCSRFToken, revokeCSRFToken } = require("./CSRFMiddleware")
 
 const generateToken = async (id, res) => {
     const accessToken = jwt.sign({ id }, process.env.JWT_SECRET, {
-        expiresIn: '1m'
+        expiresIn: '60m'
     })
     const refreshToken = jwt.sign({ id }, process.env.REFRESH_SECERET, {
         expiresIn: "7d"
@@ -19,7 +19,7 @@ const generateToken = async (id, res) => {
         httpOnly: true,
         secure: true,
         sameSite: "none",
-        maxAge: 1 * 60 * 1000, // 15 minutes
+        maxAge: 60 * 60 * 1000, // 60 minutes
 
     })
 
@@ -53,13 +53,13 @@ const VerifyRefreshToken = async (refreshToken) => {
 }
 
 const generateNewAccessToken = async (id, res) => {
-        const accessToken = jwt.sign({ id }, process.env.JWT_SECRET, { expiresIn: '15m' })
+        const accessToken = jwt.sign({ id }, process.env.JWT_SECRET, { expiresIn: '60m' })
 
         res.cookie("access_token", accessToken, {
             httpOnly: true,
             secure: true,
             sameSite: "none",
-            maxAge: 15 * 60 * 1000, // 15 minutes
+            maxAge: 60 * 60 * 1000, // 60 minutes
         })
 }
 
