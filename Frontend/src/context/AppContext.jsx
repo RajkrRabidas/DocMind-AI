@@ -30,6 +30,9 @@ export const AppProvider = ({ children }) => {
 
   async function logoutUser() {
     try {
+      // Refresh CSRF token before logout
+      await api.post("/api/auth/refresh-csrf");
+      
       const {data} = await api.post("/api/auth/logout");
       toast.success(data.message || "Logged out successfully");
       setUser(null);

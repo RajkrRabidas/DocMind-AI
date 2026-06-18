@@ -221,7 +221,6 @@ const myProfile = async (req, res) => {
 const refreshToken = async (req, res) => {
   try {
      const refreshToken = req.cookies?.refresh_token
-  console.log("Refresh token received:", refreshToken) 
 
   if (!refreshToken) {
       return res.status(403).json({ message: "Please login - no token provided" })
