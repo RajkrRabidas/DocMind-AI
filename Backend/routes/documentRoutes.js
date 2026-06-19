@@ -1,11 +1,6 @@
 const express = require("express");
-const {
-  createDocument,
-  getDocuments,
-  getDocumentById,
-  deleteDocument,
-} = require("../controllers/document.Controller.js");
-const { authMiddleware } = require("../middleware/auth.middleware.js");
+const { createDocument, getDocuments, getDocumentById, deleteDocument} = require("../controllers/document.Controller.js");
+const {authMiddleware} = require("../middleware/auth.middleware.js");
 
 const router = express.Router();
 
