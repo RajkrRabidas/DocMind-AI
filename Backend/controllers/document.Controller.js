@@ -57,10 +57,7 @@ const getDocumentById = async (req, res) => {
   }
 };
 
-const deleteDocument = async (
-  req,
-  res
-) => {
+const deleteDocument = async (req, res) => {
   try {
     const document = await documentModel.findById(
       req.params.id
