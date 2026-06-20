@@ -48,6 +48,8 @@ const tools = [
   { label: 'Quiz', icon: CircleHelp },
 ]
 import { AppData } from '../context/AppContext';
+import MyDocuments from './MyDocuments'
+import UploadDocument from './UploadDocument'
 
 const MyProfile = () => {
   const { user, logoutUser } = AppData();
@@ -151,80 +153,10 @@ const MyProfile = () => {
               })}
             </section>
 
-            <section className="rounded-lg border border-slate-200 bg-white p-5 shadow-sm">
-              <div className="mb-5 flex items-center gap-3">
-                <div className="flex h-10 w-10 items-center justify-center rounded-lg bg-blue-50 text-blue-600">
-                  <Upload size={20} />
-                </div>
-                <div>
-                  <h2 className="text-lg font-semibold tracking-tight">Upload New Document</h2>
-                  <p className="text-sm text-slate-500">Add a PDF to analyze with DocMind AI.</p>
-                </div>
-              </div>
-
-              <div className="rounded-lg border border-dashed border-slate-300 bg-slate-50 px-5 py-10 text-center">
-                <div className="mx-auto mb-4 flex h-14 w-14 items-center justify-center rounded-lg bg-white text-slate-700 shadow-sm">
-                  <Upload size={24} />
-                </div>
-                <p className="font-medium text-slate-800">Drag & Drop PDF here</p>
-                <p className="my-4 text-xs font-semibold uppercase tracking-wide text-slate-400">Or</p>
-                <div className="flex flex-col justify-center gap-3 sm:flex-row">
-                  <button type='file' className="rounded-lg border border-slate-300 bg-white px-5 py-2.5 text-sm font-medium text-slate-700 shadow-sm">
-                  </button>
-                  <button className="rounded-lg bg-slate-900 px-5 py-2.5 text-sm font-medium text-white shadow-sm">
-                    Upload Button
-                  </button>
-                </div>
-              </div>
-            </section>
+            <UploadDocument/>
 
             <div className="grid gap-6 xl:grid-cols-[1.5fr_1fr]">
-              <section className="rounded-lg border border-slate-200 bg-white p-5 shadow-sm">
-                <div className="mb-4 flex items-center gap-3">
-                  <FileText size={20} className="text-slate-700" />
-                  <h2 className="text-lg font-semibold tracking-tight">Recent Documents</h2>
-                </div>
-
-                <div className="overflow-hidden rounded-lg border border-slate-200">
-                  {documents.map((doc, index) => (
-                    <div
-                      key={doc.name}
-                      className={`grid gap-3 p-4 sm:grid-cols-[1fr_auto_auto] sm:items-center ${
-                        index !== documents.length - 1 ? 'border-b border-slate-200' : ''
-                      }`}
-                    >
-                      <div className="flex items-center gap-3">
-                        <div className="flex h-10 w-10 items-center justify-center rounded-lg bg-slate-100 text-slate-600">
-                          <FileText size={18} />
-                        </div>
-                        <p className="font-medium text-slate-800">{doc.name}</p>
-                      </div>
-
-                      <span
-                        className={`w-fit rounded-full px-3 py-1 text-xs font-semibold ${
-                          doc.status === 'Completed'
-                            ? 'bg-emerald-50 text-emerald-700'
-                            : 'bg-amber-50 text-amber-700'
-                        }`}
-                      >
-                        {doc.status}
-                      </span>
-
-                      <div className="flex gap-2">
-                        <div className="rounded-lg border border-slate-200 px-3 py-2 text-xs font-semibold text-slate-700">
-                          Open
-                        </div>
-                        {doc.canDelete && (
-                          <div className="flex items-center gap-1 rounded-lg border border-red-100 px-3 py-2 text-xs font-semibold text-red-600">
-                            <Trash2 size={14} />
-                            Delete
-                          </div>
-                        )}
-                      </div>
-                    </div>
-                  ))}
-                </div>
-              </section>
+              <MyDocuments/>
 
               <section className="rounded-lg border border-slate-200 bg-white p-5 shadow-sm">
                 <div className="mb-4 flex items-center gap-3">
