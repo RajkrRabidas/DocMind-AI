@@ -1,21 +1,29 @@
 const documentModel = require("../models/document");
 
-const createDocument = async (req, res) => {
+const uploadDocument = async (req, res) => {
   try {
-    const document = await documentModel.create({
-      userId: req.user._id,
-      title: req.body.title,
-    });
-
-    if(!document) {
+    if (!req.file) {
       return res.status(400).json({
-        message: "Document creation failed",
+        message: "PDF file is required",
       });
     }
 
-    await document.save();
+    const document = await documentModel.create({
+      userId: req.user._id,
 
-    res.status(201).json(document);
+      title: req.file.originalname,
+
+      originalFileName: req.file.originalname,
+
+      fileUrl: req.file.path,
+
+      status: "uploaded",
+    });
+
+    res.status(201).json({
+      success: true,
+      document,
+    });
   } catch (error) {
     res.status(500).json({
       message: error.message,
@@ -39,9 +47,7 @@ const getDocuments = async (req, res) => {
 
 const getDocumentById = async (req, res) => {
   try {
-    const document = await documentModel.findById(
-      req.params.id
-    );
+    const document = await documentModel.findById(req.params.id);
 
     if (!document) {
       return res.status(404).json({
@@ -59,9 +65,7 @@ const getDocumentById = async (req, res) => {
 
 const deleteDocument = async (req, res) => {
   try {
-    const document = await documentModel.findById(
-      req.params.id
-    );
+    const document = await documentModel.findById(req.params.id);
 
     if (!document) {
       return res.status(404).json({
@@ -82,7 +86,7 @@ const deleteDocument = async (req, res) => {
 };
 
 module.exports = {
-  createDocument,
+  uploadDocument,
   getDocuments,
   getDocumentById,
   deleteDocument,
