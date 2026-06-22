@@ -23,10 +23,14 @@ import {
 import api from "../apiIntersepters";
 import { useState } from "react";
 import axios from "axios";
+import { toast } from "react-toastify";
+import { AppData } from "../context/AppContext";
 
 const UploadDocument = () => {
   const [file, setFile] = useState(null);
   const [loading, setLoading] = useState(false);
+
+  const { setDocuments } = AppData();
 
   const handleUpload = async () => {
     if (!file) {
@@ -49,11 +53,12 @@ const UploadDocument = () => {
         },
       );
 
-      console.log(res.data);
-
-      alert("Upload Success");
+      const newDoc = res.data.document;
+      setDocuments((prevDocs) => [newDoc, ...(prevDocs || [])]);
+      toast.success(res.data.message || "Document uploaded successfully");
+      setFile(null);
     } catch (error) {
-      console.log(error);
+      toast.error(error.response?.data?.message || "Failed to upload document");
     } finally {
       setLoading(false);
     }

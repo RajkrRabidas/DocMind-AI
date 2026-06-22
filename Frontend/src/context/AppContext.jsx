@@ -1,5 +1,5 @@
 import { createContext, useState, useEffect, useContext } from "react";
-import { serverUrl } from "../main"; 
+import { serverUrl } from "../main";
 import axios from "axios";
 import api from "../apiIntersepters";
 import { toast } from "react-toastify";
@@ -12,8 +12,11 @@ export const AppProvider = ({ children }) => {
   const [Loading, setLoading] = useState(true);
   const [isAuth, setIsAuth] = useState(false);
 
+  const [documents, setDocuments] = useState([]);
+  const [docsLoading, setDocsLoading] = useState(true);
+
   const navigate = useNavigate();
-  
+
   async function fetchUser() {
     setLoading(true);
     try {
@@ -32,8 +35,8 @@ export const AppProvider = ({ children }) => {
     try {
       // Refresh CSRF token before logout
       await api.post("/api/auth/refresh-csrf");
-      
-      const {data} = await api.post("/api/auth/logout");
+
+      const { data } = await api.post("/api/auth/logout");
       toast.success(data.message || "Logged out successfully");
       setUser(null);
       setIsAuth(false);
@@ -43,12 +46,42 @@ export const AppProvider = ({ children }) => {
     }
   }
 
+  async function fetchDocuments() {
+    setDocsLoading(true);
+    try {
+      const res = await api.get("/api/documents");
+      setDocuments(res.data || []);
+    } catch (error) {
+      console.error("Error fetching documents:", error);
+    } finally {
+      setDocsLoading(false);
+    }
+  }
+
+  useEffect(() => {
+    if (isAuth) fetchDocuments();
+  }, [isAuth]);
+
   useEffect(() => {
     fetchUser();
   }, []);
 
   return (
-    <AppContext.Provider value={{ user, setUser, Loading, isAuth, setIsAuth, fetchUser, logoutUser }}>
+    <AppContext.Provider
+      value={{
+        user,
+        setUser,
+        Loading,
+        isAuth,
+        setIsAuth,
+        fetchUser,
+        logoutUser,
+        documents,
+        setDocuments,
+        docsLoading,
+        fetchDocuments,
+      }}
+    >
       {children}
     </AppContext.Provider>
   );
