@@ -23,7 +23,9 @@ import api from "../apiIntersepters";
 import { AppData } from "../context/AppContext";
 
 const MyDocuments = () => {
-  const {documents, docsLoading, fetchDocuments} = AppData()
+  const { documents, docsLoading, fetchDocuments } = AppData();
+
+  // const pdfUrl = `http://localhost:5000/uploads/${doc.fileUrl}`;
 
   useEffect(() => {
     fetchDocuments();
@@ -50,7 +52,9 @@ const MyDocuments = () => {
             <div
               key={doc.name}
               className={`grid gap-3 p-4 sm:grid-cols-[1fr_auto_auto] sm:items-center ${
-                index !== documents.length - 1 ? "border-b border-slate-200" : ""
+                index !== documents.length - 1
+                  ? "border-b border-slate-200"
+                  : ""
               }`}
             >
               <div className="flex items-center gap-3">
@@ -71,7 +75,15 @@ const MyDocuments = () => {
               </span>
 
               <div className="flex gap-2">
-                <div className="rounded-lg border border-slate-200 px-3 py-2 text-xs font-semibold text-slate-700">
+                <div
+                  onClick={() =>
+                    window.open(
+                      `http://localhost:3000/${doc.fileUrl}`,
+                      "_blank",
+                    )
+                  }
+                  className="rounded-lg border border-slate-200 px-3 py-2 text-xs font-semibold text-slate-700"
+                >
                   Open
                 </div>
                 {doc.canDelete && (
