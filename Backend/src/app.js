@@ -1,5 +1,6 @@
 require("dotenv").config()
 const express = require('express');
+const path = require('path');
 const cookieParser = require('cookie-parser');
 const cors = require("cors")
 const authRouter = require('../routes/authRouter');
@@ -19,6 +20,9 @@ app.use(cors({
 }))
 
 // routes
+
+// serve uploaded files
+app.use('/uploads', express.static(path.join(__dirname, '../uploads')));
 
 app.use('/api/auth', authRouter);
 app.use('/api/documents', documentRouter);
