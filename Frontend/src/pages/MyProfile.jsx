@@ -155,10 +155,11 @@ const MyProfile = () => {
 
             <UploadDocument/>
 
-            <div className="grid gap-6 xl:grid-cols-[1.5fr_1fr]">
+            <div>
               <MyDocuments/>
+            </div>
 
-              <section className="rounded-lg border border-slate-200 bg-white p-5 shadow-sm">
+            {/* <section className="rounded-lg border border-slate-200 bg-white p-5 shadow-sm">
                 <div className="mb-4 flex items-center gap-3">
                   <Bot size={20} className="text-slate-700" />
                   <h2 className="text-lg font-semibold tracking-tight">AI Tools</h2>
@@ -181,8 +182,7 @@ const MyProfile = () => {
                     )
                   })}
                 </div>
-              </section>
-            </div>
+              </section> */}
           </section>
         </main>
       </div>
