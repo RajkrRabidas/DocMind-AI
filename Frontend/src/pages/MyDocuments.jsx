@@ -78,7 +78,7 @@ const MyDocuments = () => {
 
               <span
                 className={`w-fit rounded-full px-3 py-1 text-xs font-semibold ${
-                  doc.status === "Completed"
+                  doc.status === "completed"
                     ? "bg-emerald-50 text-emerald-700"
                     : "bg-amber-50 text-amber-700"
                 }`}

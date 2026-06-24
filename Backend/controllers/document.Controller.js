@@ -1,4 +1,5 @@
 const documentModel = require("../models/document");
+const { extractPdfText } = require("../services/pdfService");
 
 const uploadDocument = async (req, res) => {
   try {
@@ -10,15 +11,18 @@ const uploadDocument = async (req, res) => {
 
     const document = await documentModel.create({
       userId: req.user._id,
-
       title: req.file.originalname,
-
       originalFileName: req.file.originalname,
-
       fileUrl: req.file.path,
-
-      status: "uploaded",
+      status: "processing",
     });
+
+    const extractedText = await extractPdfText(req.file.path);
+
+    document.extractedText = extractedText;
+    document.status = "completed";
+
+    await document.save();
 
     res.status(201).json({
       success: true,
