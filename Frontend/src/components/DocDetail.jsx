@@ -8,6 +8,138 @@ const DocumentInsightsModal = ({
   const [activeTab, setActiveTab] =
     useState("summary");
 
+  const stripMarkdownListMarker = (line) =>
+    line.replace(/^[\*\-\+]\s*/, "");
+
+  const getSummaryLines = (summary) =>
+    summary
+      .split(/\r?\n/)
+      .map((line) => stripMarkdownListMarker(line.trim()))
+      .filter(Boolean);
+
+  const getSummaryPairs = (summary) =>
+    getSummaryLines(summary)
+      .map((line) => {
+        const match = line.match(/^\*\*(.+?)\*\*:\s*(.+)$/);
+        return match
+          ? { label: match[1], value: match[2] }
+          : null;
+      })
+      .filter(Boolean);
+
+  const renderMarkdownInline = (text = "") => {
+    const parts = text.split(/(\*\*[^*]+\*\*)/g);
+    return parts.map((part, index) => {
+      const boldMatch = part.match(/^\*\*(.+)\*\*$/);
+      if (boldMatch) {
+        return (
+          <strong key={index} className="font-semibold">
+            {boldMatch[1]}
+          </strong>
+        );
+      }
+      return <span key={index}>{part}</span>;
+    });
+  };
+
+  const renderMarkdownText = (text = "") =>
+    text.split(/\r?\n/).map((line, index) => (
+      <p key={index} className="text-sm leading-7 text-slate-700">
+        {renderMarkdownInline(line)}
+      </p>
+    ));
+
+  const summaryPairs =
+    document?.summary
+      ? getSummaryPairs(document.summary)
+      : [];
+
+  const summaryBullets =
+    document?.summary
+      ? getSummaryLines(document.summary).filter(
+          (line) => !/^\*\*(.+?)\*\*:\s*(.+)$/.test(line),
+        )
+      : [];
+
+  const cleanedSummaryText =
+    document?.summary
+      ? getSummaryLines(document.summary).join("\n")
+      : "";
+
+  const renderSummaryCard = () => {
+    if (!document?.summary) {
+      return (
+        <div className="rounded-3xl border border-slate-200 bg-slate-50 p-6 text-slate-600">
+          Summary not generated yet.
+        </div>
+      );
+    }
+
+    return (
+      <div className="grid gap-6 lg:grid-cols-[1.2fr_0.8fr]">
+        <div className="space-y-4">
+          <div className="rounded-3xl border border-slate-200 bg-slate-50 p-6 shadow-sm">
+            <div className="flex items-center gap-3 text-slate-700">
+              <Sparkles size={18} className="text-blue-600" />
+              <div>
+                <p className="text-xs uppercase tracking-[0.25em] text-slate-500">
+                  AI generated summary
+                </p>
+                <h3 className="mt-2 text-lg font-semibold text-slate-900">
+                  Document overview
+                </h3>
+              </div>
+            </div>
+
+            <div className="mt-6 space-y-4">
+              {summaryPairs.length > 0 && (
+                <div className="space-y-3">
+                  {summaryPairs.map((pair, index) => (
+                    <div key={index} className="rounded-2xl border border-slate-200 bg-white p-4">
+                      <p className="text-sm font-semibold text-slate-800">
+                        {pair.label}
+                      </p>
+                      <div className="mt-1 text-sm text-slate-600">
+                        {renderMarkdownInline(pair.value)}
+                      </div>
+                    </div>
+                  ))}
+                </div>
+              )}
+
+              {summaryBullets.length > 0 && (
+                <div className="rounded-2xl border border-slate-200 bg-white p-5">
+                  <p className="text-sm font-semibold text-slate-900">
+                    Key points
+                  </p>
+                  <ul className="mt-4 space-y-3">
+                    {summaryBullets.map((bullet, index) => (
+                      <li key={index} className="flex gap-3">
+                        <span className="mt-1 h-2 w-2 rounded-full bg-blue-600" />
+                        <span className="text-sm leading-6 text-slate-700">
+                          {renderMarkdownInline(bullet)}
+                        </span>
+                      </li>
+                    ))}
+                  </ul>
+                </div>
+              )}
+            </div>
+          </div>
+        </div>
+
+        <div className="rounded-3xl border border-slate-200 bg-white p-6 shadow-sm">
+          <p className="text-sm font-semibold uppercase tracking-[0.3em] text-slate-500">
+            Summary details
+          </p>
+          <div className="mt-4 space-y-3">
+            {renderMarkdownText(cleanedSummaryText)}
+          </div>
+        </div>
+      </div>
+    );
+  };
+
   const tabs = [
     "summary",
     "keyPoints",
@@ -69,22 +201,7 @@ const DocumentInsightsModal = ({
         <div className="flex-1 overflow-y-auto p-6">
 
           {activeTab === "summary" && (
-            <div>
-              <div className="mb-4 flex items-center gap-2">
-                <Sparkles
-                  size={18}
-                  className="text-yellow-500"
-                />
-                <h3 className="font-semibold">
-                  AI Summary
-                </h3>
-              </div>
-
-              <p className="leading-7 text-slate-700 whitespace-pre-wrap">
-                {document.summary ||
-                  "Summary not generated yet"}
-              </p>
-            </div>
+            <div>{renderSummaryCard()}</div>
           )}
 
           {activeTab === "keyPoints" && (

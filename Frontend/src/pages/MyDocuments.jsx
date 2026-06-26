@@ -23,6 +23,7 @@ import {
 import api from "../apiIntersepters";
 import { AppData } from "../context/AppContext";
 import { useParams } from "react-router-dom";
+import { toast } from "react-toastify";
 
 const MyDocuments = () => {
   const { documents, docsLoading, fetchDocuments } = AppData();
@@ -35,14 +36,66 @@ const MyDocuments = () => {
     try {
       const { data } = await api.delete(`/api/documents/delete/${docId}`);
 
+      toast.success(data.message || "Document deleted successfully");
       fetchDocuments(); // Refresh the documents list after deletion
     } catch (error) {
+      toast.error(error.response?.data?.message || "Failed to delete document");
       console.error("Error deleting document:", error);
     }
   };
 
   const [selectedDoc, setSelectedDoc] = useState(null);
   const [activeTab, setActiveTab] = useState("Summary");
+
+  const stripMarkdownListMarker = (line) =>
+    line.replace(/^[\*\-\+]\s*/, "");
+
+  const renderMarkdownInline = (text = "") => {
+    return text.split(/(\*\*[^*]+\*\*)/g).map((part, index) => {
+      const boldMatch = part.match(/^\*\*(.+)\*\*$/);
+      if (boldMatch) {
+        return (
+          <strong key={index} className="font-semibold">
+            {boldMatch[1]}
+          </strong>
+        );
+      }
+      return <span key={index}>{part}</span>;
+    });
+  };
+
+  const renderMarkdownText = (text = "") =>
+    text.split(/\r?\n/).map((line, index) => (
+      <p key={index} className="text-sm leading-7 text-slate-700">
+        {renderMarkdownInline(line)}
+      </p>
+    ));
+
+  const parseSummary = (summaryText) => {
+    return summaryText
+      ? summaryText
+          .split(/\r?\n/)
+          .map((line) => stripMarkdownListMarker(line.trim()))
+          .filter(Boolean)
+          .map((line) => {
+            const fieldMatch = line.match(/^\*\*(.+?)\*\*:\s*(.+)$/);
+            if (fieldMatch) {
+              return {
+                type: "field",
+                label: fieldMatch[1].trim(),
+                value: fieldMatch[2].trim(),
+              };
+            }
+
+            return { type: "bullet", text: line };
+          })
+      : [];
+  };
+
+  const selectedDocSummary = selectedDoc?.summary || "";
+  const summaryItems = parseSummary(selectedDocSummary);
+  const summaryFields = summaryItems.filter((item) => item.type === "field");
+  const summaryBullets = summaryItems.filter((item) => item.type === "bullet");
 
   const handleViewSummary = (doc) => {
     setSelectedDoc(doc);
@@ -94,10 +147,68 @@ const MyDocuments = () => {
 
             <div className="p-6 max-h-[480px] overflow-auto">
               {activeTab === "Summary" && (
-                <div>
-                  <p className="text-slate-700">{selectedDoc.summary}</p>
+              <div className=" space-y-4 ">
+                <div className="space-y-4">
+                  <div className="rounded-3xl border border-slate-200 bg-slate-50 p-6 shadow-sm">
+                    <div className="flex items-center gap-3 text-slate-700">
+                      <Sparkles size={18} className="text-blue-600" />
+                      <div>
+                        <p className="text-xs uppercase tracking-[0.25em] text-slate-500">
+                          Document summary
+                        </p>
+                        <h3 className="mt-2 text-lg font-semibold text-slate-900">
+                          {selectedDoc?.title || "Summary overview"}
+                        </h3>
+                      </div>
+                    </div>
+
+                    <div className="mt-6 space-y-4">
+                      {summaryFields.length > 0 && (
+                        <div className="grid gap-4 md:grid-cols-2">
+                          {summaryFields.map((item, index) => (
+                            <div
+                              key={index}
+                              className="rounded-2xl border border-slate-200 bg-white p-4"
+                            >
+                              <p className="text-sm font-semibold text-slate-800">
+                                {renderMarkdownInline(item.label)}
+                              </p>
+                              <div className="mt-1 text-sm text-slate-600">
+                                {renderMarkdownInline(item.value)}
+                              </div>
+                            </div>
+                          ))}
+                        </div>
+                      )}
+
+                      {summaryBullets.length > 0 && (
+                        <div className="rounded-2xl border border-slate-200 bg-white p-5">
+                          <p className="text-sm font-semibold text-slate-900">
+                            Key points
+                          </p>
+                          <ul className="mt-4 space-y-3">
+                            {summaryBullets.map((item, index) => (
+                              <li key={index} className="flex gap-3">
+                                <span className="mt-1 h-2 w-2 rounded-full bg-blue-600" />
+                                <span className="text-sm leading-6 text-slate-700">
+                                  {renderMarkdownInline(item.text)}
+                                </span>
+                              </li>
+                            ))}
+                          </ul>
+                        </div>
+                      )}
+
+                      {summaryFields.length === 0 && summaryBullets.length === 0 && (
+                        <div className="rounded-3xl border border-slate-200 bg-white p-6 text-slate-600">
+                          Summary not generated yet.
+                        </div>
+                      )}
+                    </div>
+                  </div>
                 </div>
-              )}
+              </div>
+            )}
 
               {activeTab === "Key Points" && (
                 <div>

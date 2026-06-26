@@ -107,6 +107,11 @@ const UploadDocument = () => {
             {loading ? "Uploading..." : "Upload"}
           </button>
         </form>
+        {loading && (
+          <p className="mt-4 text-sm text-slate-600">
+            This take a few moments while your PDF is processed...
+          </p>
+        )}
       </div>
     </section>
   );
