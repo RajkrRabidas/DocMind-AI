@@ -1,20 +1,29 @@
 const { GoogleGenAI } = require("@google/genai");
+require("dotenv").config();
 
+// Gemini AI setup
 const ai = new GoogleGenAI({
   apiKey: process.env.GEMINI_API_KEY,
 });
-console.log("API KEY EXISTS:", !!process.env.GEMINI_API_KEY);
 
+// Generate Summary
 const generateSummary = async (text) => {
   try {
     const response = await ai.models.generateContent({
-      model: process.env.GEMINI_MODEL || "gemini-2.5-pro",
-      contents: `Summarize this PDF in simple bullet points:\n\n${text}`,
+      model: "gemini-2.5-flash",
+
+      contents: `
+Summarize this document in simple bullet points.
+
+${text}
+`,
     });
+
     return response.text;
+
   } catch (error) {
-    console.error("Error generating summary:", error);
-    throw new Error("Failed to generate summary");
+    console.log(error);
+    throw new Error("Summary generation failed");
   }
 };
 
