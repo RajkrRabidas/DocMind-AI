@@ -13,14 +13,34 @@ const generateSummary = async (text) => {
       model: "gemini-2.5-flash",
 
       contents: `
-Summarize this document in simple bullet points.
+You are an AI document analyzer.
 
-${text}
+Analyze the following document and return ONLY valid JSON.
+
+The JSON format must be exactly:
+
+{
+  "summary": "Write a short summary in 3-4 sentences.",
+  "keyPoints": [
+    "Point 1",
+    "Point 2",
+    "Point 3",
+    "Point 4",
+    "Point 5"
+  ]
+}
+
+Do not write markdown.
+Do not use \`\`\`json.
+Do not add any explanation.
+Return only valid JSON.
+
+Document:
+${text.slice(0, 15000)}
 `,
     });
 
     return response.text;
-
   } catch (error) {
     console.log(error);
     throw new Error("Summary generation failed");
