@@ -1,6 +1,6 @@
 const documentModel = require("../models/document");
 const { extractPdfText } = require("../services/pdfService");
-const {generateSummary} = require("../services/geminiService")
+const { generateSummary } = require("../services/geminiService");
 
 const uploadDocument = async (req, res) => {
   try {
@@ -21,7 +21,6 @@ const uploadDocument = async (req, res) => {
     const extractedText = await extractPdfText(req.file.path);
     const summary = await generateSummary(extractedText);
 
-    
     document.extractedText = extractedText;
     document.status = "uploaded";
     document.summary = summary;
